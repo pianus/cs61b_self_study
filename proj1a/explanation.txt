@@ -1,0 +1,6 @@
+I use this version of the cs61b for self study on data structure on my own.
+The current version of cs61b is spring 2018. Today is October 24th, 2018.
+Hope the latest version of the data structure course at Berkeley will give me
+strong fundations on computer science for my future study. T
+
+Le Yu

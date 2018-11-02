@@ -7,14 +7,23 @@ public class ArrayDeque<T> {
 
     /*
     invariants:
-    1. last item is returned by t[size-1]
-    2. user do not access index number >= size
-    3. the size of array t do not less than 8
+    1. first item is returned by t[(nextFirst + 1) % arrayLength]
+    2. last item is returned by t[(nextLast - 1) % arrayLength]
+    3. size = ((nextLast - nextFirst) % arrayLength) -1
+    4. user only have access to index number < ((nextLast - nextFirst) % arrayLength)
+    5. the size of array t do not less than 8
+    6. the list start at (nextLast - 1) % arrayLength
      */
     private int size;
     private T[] t;
+    private int arrayLength;
+    private int nextFirst;
+    private int nextLast;
     public ArrayDeque() {
         t = (T[]) new Object[8];
+        arrayLength = t.length;
+        nextFirst = -1 % arrayLength;
+        nextLast = 0;
         size = 0;
     }
 
@@ -36,8 +45,8 @@ public class ArrayDeque<T> {
         if (size >= t.length) {
             resizeArray(t.length * 2);
         }
-        System.arraycopy(t, 0, t, 1, size);
-        t[0] = item;
+        t[nextFirst] = item;
+        nextFirst = (nextFirst - 1) % arrayLength;
         size += 1;
     }
 
@@ -49,7 +58,8 @@ public class ArrayDeque<T> {
         if (size >= t.length) {
             resizeArray(t.length * 2);
         }
-        t[size] = item;
+        t[nextLast] = item;
+        nextLast = (nextLast + 1) % arrayLength;
         size += 1;
     }
 
