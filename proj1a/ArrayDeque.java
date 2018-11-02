@@ -42,7 +42,7 @@ public class ArrayDeque<T> {
      * @param item the item added to the first of deque
      */
     public void addFirst(T item) {
-        if (size >= t.length) {
+        if (size >= arrayLength) {
             resizeArray(t.length * 2);
         }
         t[nextFirst] = item;

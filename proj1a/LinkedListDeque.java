@@ -7,11 +7,11 @@ public class LinkedListDeque<T> {
 
     private static class ItemNode<T> {
 
-        public T item;
-        public ItemNode<T> previous;
-        public ItemNode<T> next;
+        private T item;
+        private ItemNode<T> previous;
+        private ItemNode<T> next;
 
-        public ItemNode(T i, ItemNode p, ItemNode n) {
+        private ItemNode(T i, ItemNode<T> p, ItemNode<T> n) {
             item = i;
             previous = p;
             next = n;
@@ -19,7 +19,7 @@ public class LinkedListDeque<T> {
     }
 
     private int size;
-    private ItemNode sentinel;
+    private ItemNode<T> sentinel;
 
     /**
      * initialize linkedListDeque with a sentinel ItemNode.
@@ -32,7 +32,7 @@ public class LinkedListDeque<T> {
     3. sentinel.previous is the last item in the LinkedLIstDeque.
      */
     public LinkedListDeque() {
-        sentinel = new ItemNode<Integer>(null, null, null);
+        sentinel = new ItemNode<>(null, null, null);
         sentinel.previous = sentinel;
         sentinel.next = sentinel;
 
@@ -44,7 +44,7 @@ public class LinkedListDeque<T> {
      * @param item the item added to the front of deque
      */
     public void addFirst(T item) {
-        ItemNode first = new ItemNode(item, sentinel, sentinel.next);
+        ItemNode<T> first = new ItemNode<>(item, sentinel, sentinel.next);
         sentinel.next.previous = first;
         sentinel.next = first;
 
@@ -56,7 +56,7 @@ public class LinkedListDeque<T> {
      * @param item the item added to the last of deque
      */
     public void addLast(T item) {
-        ItemNode last = new ItemNode(item, sentinel.previous, sentinel);
+        ItemNode<T> last = new ItemNode<>(item, sentinel.previous, sentinel);
         sentinel.previous.next = last;
         sentinel.previous = last;
         size += 1;
@@ -129,7 +129,8 @@ public class LinkedListDeque<T> {
         if (index >= size) {
             return null;
         }
-        ItemNode<T> current = sentinel;
+        ItemNode<T> current;
+        current = sentinel;
         for (int i = 0; i < index; i++) {
             current = current.next;
         }
