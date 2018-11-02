@@ -4,12 +4,7 @@
  * @author le
  */
 public class LinkedListDeque<T> {
-    /**
-     * a raw recursive linked list class.
-     * @param i desired data stored in ItemNode
-     * @param p a pointer points toward previous ItemNode
-     * @param n a pointer points toward next ItemNode
-     */
+
     private static class ItemNode<T> {
 
         public T item;

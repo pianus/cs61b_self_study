@@ -12,7 +12,7 @@ public class ArrayDeque<T> {
     3. size = ((nextLast - nextFirst) % arrayLength) -1
     4. user only have access to index number < ((nextLast - nextFirst) % arrayLength)
     5. the size of array t do not less than 8
-    6. the list start at (nextLast - 1) % arrayLength
+    6. the list start at (nextFirst + 1) % arrayLength
      */
     private int size;
     private T[] t;
