@@ -129,7 +129,7 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        if (size >= 16 && size < 0.25 * t.length) {
+        if (size >= 16 && size < 0.25 * arrayLength) {
             resizeArray(t.length / 2);
         }
         int removeIndex = (nextFirst + 1) % arrayLength;
