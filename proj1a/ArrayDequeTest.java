@@ -5,7 +5,7 @@ public class ArrayDequeTest {
     @Test
     public void testResizeArray() {
         //array increase size
-        int[] lst = new int[] {1,2,3,4,5,6,7,8};
+        int[] lst = new int[] {1, 2, 3, 4, 5, 6, 7, 8};
         ArrayDeque<Integer> ad = makeList(lst);
         ad.addFirst(100);
         Integer e100 = 100;
@@ -18,15 +18,16 @@ public class ArrayDequeTest {
         Integer e6 = 6;
         Integer e7 = 7;
         Integer e8 = 8;
-        assertEquals(e100 ,ad.get(0));
+
+        assertEquals(e100, ad.get(0));
         assertEquals(e5, ad.get(5));
         assertEquals(e2, ad.get(2));
 
-        int[] lst2 = new int[] {1,2,3,4,5,6,7};
+        int[] lst2 = new int[] {1, 2, 3, 4, 5, 6, 7};
         ArrayDeque<Integer> ad2 = makeList(lst2);
         ad2.addFirst(0);
         ad2.addFirst(100);
-        assertEquals(e100 ,ad2.get(0));
+        assertEquals(e100, ad2.get(0));
         assertEquals(e0, ad2.get(1));
         assertEquals(e1, ad2.get(2));
 
@@ -38,7 +39,12 @@ public class ArrayDequeTest {
         assertEquals(e4, ad.removeLast());
         assertEquals(e3, ad.removeLast());
 
+        //add a lot of numbers in list
+        for (int i = 0; i < 129; i++) {
+            ad2.addFirst(0);
+        }
 
+        System.out.println(ad.toString());
     }
 
 
