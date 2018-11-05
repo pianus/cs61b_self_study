@@ -98,7 +98,7 @@ public class LinkedListDeque<T> {
             return null;
         }
         ItemNode<T> first = sentinel.next;
-        sentinel.next.previous = sentinel;
+        sentinel.next.next.previous = sentinel;
         sentinel.next = sentinel.next.next;
         size -= 1;
         return first.item;
@@ -113,7 +113,7 @@ public class LinkedListDeque<T> {
             return null;
         }
         ItemNode<T> last = sentinel.previous;
-        sentinel.previous.next = sentinel;
+        sentinel.previous.previous.next = sentinel;
         sentinel.previous = sentinel.previous.previous;
         size -= 1;
         return last.item;

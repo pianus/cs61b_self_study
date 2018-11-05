@@ -7,10 +7,6 @@ public class ArrayDequeTest {
 
     }
 
-    @Test
-    public static void createArray(ArrayDeque ad) {
-
-    }
 
     public static ArrayDeque<Integer> makeList(int[] input) {
         ArrayDeque<Integer> ad = new ArrayDeque();
@@ -18,5 +14,8 @@ public class ArrayDequeTest {
             ad.addFirst(i);
         }
         return ad;
+    }
+    public static void main(String[] args) {
+        ArrayDeque<Integer> ad = new ArrayDeque<Integer>();
     }
 }
