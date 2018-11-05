@@ -44,9 +44,23 @@ public class ArrayDequeTest {
             ad2.addFirst(0);
         }
 
-        System.out.println(ad.toString());
     }
 
+    @Test
+    public void testAddLastRemoveFirst() {
+        //array increase size
+        int[] lst = new int[]{1, 2, 3, 4, 5, 6};
+        ArrayDeque<Integer> ad = makeList(lst);
+        for (int i = 0; i < 100; i++) {
+            ad.addLast(1);
+            ad.addFirst(2);
+        }
+        for (int i = 0; i < 100; i++) {
+            ad.removeFirst();
+            ad.removeFirst();
+        }
+        assertEquals(6,ad.size());
+    }
 
     public static ArrayDeque<Integer> makeList(int[] input) {
         ArrayDeque<Integer> ad = new ArrayDeque();

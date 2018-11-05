@@ -50,19 +50,19 @@ public class ArrayDeque<T> {
             int endLength = size - frontLength; //second part length of the list
             System.arraycopy(t, first(), newArray, 0, frontLength);
             System.arraycopy(t, 0, newArray, frontLength, endLength);
-            nextFirst = length-1;
+            nextFirst = length - 1;
             nextLast = size;
         } else {
             if (nextFirst < nextLast) {
                 System.arraycopy(t, first(), newArray, 0, size);
-                nextFirst = Math.floorMod(-1, length);
+                nextFirst = length - 1;
                 nextLast = size;
             } else {
                 int frontLength = t.length - nextFirst - 1;
                 int endLength = size - frontLength; //second part length of the list
                 System.arraycopy(t, first(), newArray, 0, frontLength);
                 System.arraycopy(t, 0, newArray, frontLength, endLength);
-                nextFirst = length-1;
+                nextFirst = length - 1;
                 nextLast = size;
             }
 
@@ -135,7 +135,7 @@ public class ArrayDeque<T> {
         }
         int removeIndex = Math.floorMod((nextFirst + 1), t.length);
         T first = t[removeIndex];
-        nextFirst += 1;
+        nextFirst = Math.floorMod(nextFirst + 1, t.length);
         size -= 1;
         t[removeIndex] = null;
         return first;
@@ -154,7 +154,7 @@ public class ArrayDeque<T> {
         }
         int removeIndex = Math.floorMod((nextLast - 1), t.length);
         T last = t[removeIndex];
-        nextLast -= 1;
+        nextLast = Math.floorMod(nextLast - 1, t.length); 
         size -= 1;
         t[removeIndex] = null;
         return last;
