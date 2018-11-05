@@ -18,13 +18,6 @@ public class ArrayDeque<T> {
     private T[] t;
     private int nextFirst;
     private int nextLast;
-    public ArrayDeque() {
-        t = (T[]) new Object[8];
-        nextFirst = Math.floorMod(-1, arrayLength());
-        nextLast = 0;
-        size = 0;
-    }
-
     //return the length of the array
     private int arrayLength() {
         return t.length;
@@ -40,6 +33,13 @@ public class ArrayDeque<T> {
         return Math.floorMod((nextLast - 1), arrayLength());
     }
 
+    public ArrayDeque() {
+        t = (T[]) new Object[8];
+        nextFirst = Math.floorMod(-1, arrayLength());
+        nextLast = 0;
+        size = 0;
+    }
+
     /**
      * resize the array t to allow more items stored in
      * @param length the length of array t changing to
@@ -50,23 +50,27 @@ public class ArrayDeque<T> {
         }
 
         T[] newArray = (T[]) new Object[length];
+        //this method only works with current class, doesn't impliment every single case
         if (length > arrayLength()) {
-            if (first() < last()) {
+            if (nextFirst + 1 + size < arrayLength()) {
                 //when the list don't 'turn' in the array
-                System.arraycopy(t, first(), newArray, last(), size);
+                System.arraycopy(t, first(), newArray, first(), size);
             } else {
                 //when the list 'turn'
                 //frontlength is size of first part of list before 'turn'
-                int frontLength = arrayLength() - first();
+                int frontLength = arrayLength() - nextFirst - 1;
                 int endLength = size - frontLength; //second part length of the list
                 System.arraycopy(t, first(), newArray, first(), frontLength);
                 System.arraycopy(t, 0, newArray, arrayLength(), endLength);
+                //because the array 'turned', need to modify nextLast
+                nextLast = Math.floorMod(nextFirst + 1 + size, length);
             }
-        } else if (length < arrayLength()) {
-            System.arraycopy(t, nextFirst + 1, newArray, (nextFirst + 1) % length, size);
 
-            nextFirst = Math.floorMod((nextFirst + 1), length);
-            nextLast = Math.floorMod((nextFirst + size + 1), length);
+        } else {
+            System.arraycopy(t, first(), newArray, 0, size);
+
+            nextFirst = Math.floorMod(-1, length);
+            nextLast = size;
         }
         t = newArray;
 
@@ -131,8 +135,8 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        if (size >= 16 && size < 0.25 * arrayLength()) {
-            resizeArray(t.length / 2);
+        if (arrayLength() >= 16 && size <= 0.25 * arrayLength()) {
+            resizeArray(arrayLength() / 2);
         }
         int removeIndex = Math.floorMod((nextFirst + 1), arrayLength());
         T first = t[removeIndex];
@@ -150,8 +154,8 @@ public class ArrayDeque<T> {
         if (size == 0) {
             return null;
         }
-        if (size >= 16 && size < 0.25 * t.length) {
-            resizeArray(t.length / 2);
+        if (arrayLength() >= 16 && size <= 0.25 * arrayLength()) {
+            resizeArray(arrayLength() / 2);
         }
         int removeIndex = Math.floorMod((nextLast - 1), arrayLength());
         T last = t[removeIndex];
