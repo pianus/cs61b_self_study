@@ -27,14 +27,47 @@ public class ArrayDeque<T> {
         size = 0;
     }
 
+    /** return the index of first list value in the array */
+    private int first() {
+        return (nextFirst + 1) % arrayLength;
+    }
+
+    /** return the index of last list value in the array */
+    private int last() {
+        return (nextLast - 1) % arrayLength;
+    }
+
     /**
      * resize the array t to allow more items stored in
      * @param length the length of array t changing to
      */
     private void resizeArray(int length) {
+        if (arrayLength == length) {
+            return;
+        }
+
         T[] newArray = (T[]) new Object[length];
-        System.arraycopy(t, 0, newArray, 0, size);
+        if (length > arrayLength) {
+            if (first() < last()) {
+                //when the list don't 'turn' in the array
+                System.arraycopy(t, first(), newArray, last(), size);
+            } else {
+                //when the list 'turn'
+                //frontlength is size of first part of list before 'turn'
+                int frontLength = arrayLength - first();
+                int endLength = size - frontLength; //second part length of the list
+                System.arraycopy(t, first(), newArray, first(), frontLength);
+                System.arraycopy(t, 0, newArray, arrayLength, endLength);
+            }
+        } else if (length < arrayLength) {
+            System.arraycopy(t, nextFirst + 1, newArray, (nextFirst + 1) % length, size);
+
+            nextFirst = (nextFirst + 1) % length;
+            nextLast = (nextFirst + size + 1) % length;
+        }
         t = newArray;
+        arrayLength = length;
+
     }
 
     /**
@@ -83,8 +116,8 @@ public class ArrayDeque<T> {
      * print out the human readable deque.
      */
     public void printDeque() {
-        for (int i = 0; i < size; i++) {
-            System.out.println(t[i] + " ");
+        for (int i = nextFirst + 1; i < nextFirst + 1 + size; i++) {
+            System.out.println(t[i % arrayLength] + " ");
         }
     }
 
@@ -99,10 +132,11 @@ public class ArrayDeque<T> {
         if (size >= 16 && size < 0.25 * t.length) {
             resizeArray(t.length / 2);
         }
-        T first = t[0];
-        System.arraycopy(t, 1, t, 0, size - 1);
+        int removeIndex = (nextFirst + 1) % arrayLength;
+        T first = t[removeIndex];
+        nextFirst += 1;
         size -= 1;
-        t[size] = null;
+        t[removeIndex] = null;
         return first;
     }
 
@@ -117,9 +151,11 @@ public class ArrayDeque<T> {
         if (size >= 16 && size < 0.25 * t.length) {
             resizeArray(t.length / 2);
         }
+        int removeIndex = (nextLast - 1) % arrayLength;
+        T last = t[removeIndex];
+        nextLast -= 1;
         size -= 1;
-        T last = t[size - 1];
-        t[size - 1] = null;
+        t[removeIndex] = null;
         return last;
     }
 
@@ -133,6 +169,6 @@ public class ArrayDeque<T> {
         if (index >= size) {
             return null;
         }
-        return t[index];
+        return t[(nextFirst + 1 + index) % arrayLength];
     }
 }
