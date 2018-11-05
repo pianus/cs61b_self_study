@@ -20,7 +20,7 @@ public class ArrayDeque<T> {
     private int nextLast;
     public ArrayDeque() {
         t = (T[]) new Object[8];
-        nextFirst = -1 % arrayLength();
+        nextFirst = Math.floorMod(-1, arrayLength());
         nextLast = 0;
         size = 0;
     }
@@ -32,12 +32,12 @@ public class ArrayDeque<T> {
 
     /** return the index of first list value in the array */
     private int first() {
-        return (nextFirst + 1) % arrayLength();
+        return Math.floorMod((nextFirst + 1), arrayLength());
     }
 
     /** return the index of last list value in the array */
     private int last() {
-        return (nextLast - 1) % arrayLength();
+        return Math.floorMod((nextLast - 1), arrayLength());
     }
 
     /**
@@ -65,8 +65,8 @@ public class ArrayDeque<T> {
         } else if (length < arrayLength()) {
             System.arraycopy(t, nextFirst + 1, newArray, (nextFirst + 1) % length, size);
 
-            nextFirst = (nextFirst + 1) % length;
-            nextLast = (nextFirst + size + 1) % length;
+            nextFirst = Math.floorMod((nextFirst + 1), length);
+            nextLast = Math.floorMod((nextFirst + size + 1), length);
         }
         t = newArray;
 
@@ -81,7 +81,7 @@ public class ArrayDeque<T> {
             resizeArray(t.length * 2);
         }
         t[nextFirst] = item;
-        nextFirst = (nextFirst - 1) % arrayLength();
+        nextFirst = Math.floorMod((nextFirst - 1), arrayLength());
         size += 1;
     }
 
@@ -94,7 +94,7 @@ public class ArrayDeque<T> {
             resizeArray(t.length * 2);
         }
         t[nextLast] = item;
-        nextLast = (nextLast + 1) % arrayLength();
+        nextLast = Math.floorMod((nextLast + 1), arrayLength());
         size += 1;
     }
 
@@ -119,7 +119,7 @@ public class ArrayDeque<T> {
      */
     public void printDeque() {
         for (int i = nextFirst + 1; i < nextFirst + 1 + size; i++) {
-            System.out.println(t[i % arrayLength()] + " ");
+            System.out.println(t[Math.floorMod(i, arrayLength())] + " ");
         }
     }
 
@@ -134,7 +134,7 @@ public class ArrayDeque<T> {
         if (size >= 16 && size < 0.25 * arrayLength()) {
             resizeArray(t.length / 2);
         }
-        int removeIndex = (nextFirst + 1) % arrayLength();
+        int removeIndex = Math.floorMod((nextFirst + 1), arrayLength());
         T first = t[removeIndex];
         nextFirst += 1;
         size -= 1;
@@ -153,7 +153,7 @@ public class ArrayDeque<T> {
         if (size >= 16 && size < 0.25 * t.length) {
             resizeArray(t.length / 2);
         }
-        int removeIndex = (nextLast - 1) % arrayLength();
+        int removeIndex = Math.floorMod((nextLast - 1), arrayLength());
         T last = t[removeIndex];
         nextLast -= 1;
         size -= 1;
@@ -171,6 +171,6 @@ public class ArrayDeque<T> {
         if (index >= size) {
             return null;
         }
-        return t[(first() + index) % arrayLength()];
+        return t[Math.floorMod((first() + index), arrayLength())];
     }
 }

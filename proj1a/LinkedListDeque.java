@@ -130,7 +130,7 @@ public class LinkedListDeque<T> {
             return null;
         }
         ItemNode<T> current;
-        current = sentinel;
+        current = sentinel.next;
         for (int i = 0; i < index; i++) {
             current = current.next;
         }
