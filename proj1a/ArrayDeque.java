@@ -44,25 +44,28 @@ public class ArrayDeque<T> {
         T[] newArray = (T[]) new Object[length];
         //this method only works with current class, doesn't impliment every single case
         if (length > t.length) {
-            if (nextFirst + 1 + size < t.length) {
-                //when the list don't 'turn' in the array
-                System.arraycopy(t, first(), newArray, first(), size);
+            //only when array is full, the array needs to increase size
+            //a this time, nextFirst and nextLast are adjacent
+            int frontLength = t.length - nextFirst - 1;
+            int endLength = size - frontLength; //second part length of the list
+            System.arraycopy(t, first(), newArray, 0, frontLength);
+            System.arraycopy(t, 0, newArray, frontLength, endLength);
+            nextFirst = length-1;
+            nextLast = size;
+        } else {
+            if (nextFirst < nextLast) {
+                System.arraycopy(t, first(), newArray, 0, size);
+                nextFirst = Math.floorMod(-1, length);
+                nextLast = size;
             } else {
-                //when the list 'turn'
-                //frontlength is size of first part of list before 'turn'
                 int frontLength = t.length - nextFirst - 1;
                 int endLength = size - frontLength; //second part length of the list
-                System.arraycopy(t, first(), newArray, first(), frontLength);
-                System.arraycopy(t, 0, newArray, t.length, endLength);
-                //because the array 'turned', need to modify nextLast
-                nextLast = Math.floorMod(nextFirst + 1 + size, length);
+                System.arraycopy(t, first(), newArray, 0, frontLength);
+                System.arraycopy(t, 0, newArray, frontLength, endLength);
+                nextFirst = length-1;
+                nextLast = size;
             }
 
-        } else {
-            System.arraycopy(t, first(), newArray, 0, size);
-
-            nextFirst = Math.floorMod(-1, length);
-            nextLast = size;
         }
         t = newArray;
 
