@@ -26,7 +26,10 @@ public class TestPalindrome {
         assertTrue(palindrome.isPalindrome(""));
         assertFalse(palindrome.isPalindrome("cad"));
         assertFalse(palindrome.isPalindrome("print"));
-
+        assertTrue(palindrome.isPalindrome("%&&%"));
+        assertTrue(palindrome.isPalindrome("aBcBa"));
+        assertFalse(palindrome.isPalindrome("%%AA"));
+        assertFalse(palindrome.isPalindrome("*&^&**"));
     }
 
     @Test
@@ -40,5 +43,9 @@ public class TestPalindrome {
         assertFalse(palindrome.isPalindrome("aaa",obo));
         assertFalse(palindrome.isPalindrome("acppdb",obo));
         assertFalse(palindrome.isPalindrome("asffffsa",obo));
+        assertTrue(palindrome.isPalindrome("%&%&",obo));
+        assertTrue(palindrome.isPalindrome("AcBbB",obo));
+        assertFalse(palindrome.isPalindrome("bcCB",obo));
+        assertFalse(palindrome.isPalindrome("*&^&**",obo));
     }
 }
