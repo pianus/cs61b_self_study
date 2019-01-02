@@ -41,7 +41,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
 
         @Override
         public boolean hasNext() {
-            return next <= size;
+            return next < size;
         }
         @Override
         public T next() {
