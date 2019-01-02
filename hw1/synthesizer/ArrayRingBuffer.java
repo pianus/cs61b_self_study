@@ -1,5 +1,6 @@
 package synthesizer;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 //TODO: Make sure to make this class and all of its methods public
 //TODO: Make sure to make this class extend AbstractBoundedQueue<t>
@@ -48,7 +49,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         @Override
         public T next() {
             if (! hasNext()) {
-                return null;
+                throw new NoSuchElementException();
             }
             next += 1;
             return rbArray[next-1];
@@ -88,6 +89,9 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         return t;
     }
     public T peek() {
+        if (this.isEmpty()) {
+            throw new RuntimeException("Ring buffer is empty");
+        }
         return rb[first];
     }
     // TODO: When you get to part 5, implement the needed code to support iteration.
