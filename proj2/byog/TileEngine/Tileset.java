@@ -1,7 +1,10 @@
 package byog.TileEngine;
 
 import java.awt.Color;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import byog.Core.RandomUtils;
 /**
  * Contains constant tile objects, to avoid having to remake the same tiles in different parts of
  * the code.
@@ -33,6 +36,11 @@ public class Tileset {
     public static final TETile SAND = new TETile('▒', Color.yellow, Color.black, "sand");
     public static final TETile MOUNTAIN = new TETile('▲', Color.gray, Color.black, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, Color.black, "tree");
+
+    public static final TETile[] mapTexture = new TETile[]{Tileset.WALL, Tileset.FLOOR, Tileset.FLOWER, Tileset.WATER, Tileset.SAND, Tileset.MOUNTAIN, Tileset.TREE};
+    public static TETile nextRanMapTex(Random r) {
+        return Tileset.mapTexture[RandomUtils.uniform(r, 7)];
+    }
 }
 
 
