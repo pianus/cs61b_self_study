@@ -52,7 +52,7 @@ public class MemoryGame {
         //TODO: Generate random string of letters of length n
         String s = "";
         for (int i = 0; i < n; i += 1) {
-            s = s + CHARACTERS[RandomUtils.uniform(rand, n)];
+            s = s + CHARACTERS[RandomUtils.uniform(rand, 26)];
         }
         return s;
     }
@@ -89,12 +89,22 @@ public class MemoryGame {
         for (int i = 0; i < letters.length(); i += 1) {
             drawFrame(((Character) letters.charAt(i)).toString());
             //pause for 1 second
-
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
 
             //display the black screen
             StdDraw.clear(Color.BLACK);
             StdDraw.show();
             //pause for 0.5 second
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
+
         }
 
         //TODO: Display each character in letters, making sure to blank the screen between letters

@@ -19,6 +19,7 @@ public class Game {
     public static final int height = 30;
     public TETile[][] world;
     public int seed;
+    public Position characterPos;
 
     public Game() {
 
@@ -39,8 +40,9 @@ public class Game {
         RandomUtils.uniform(r);
         int numOfRooms = RandomUtils.uniform(r, 4, 14);
 
-        CreateMap cm = new CreateMap(r, height, width, world);
-        cm.create(numOfRooms);
+        CreateMap.createRandomMap(r, world, numOfRooms);
+        this.characterPos = CreateMap.createCharacter(r, world);
+
     }
 
     boolean fitInMap(Position BL, Position UR) {
@@ -53,6 +55,15 @@ public class Game {
         }
         return false;
     }
+
+    boolean fitInMap(Position p) {
+        if (p.x < this.width && p.y < this.height
+                && p.x >= 0 && p.y >= 0) {
+            return true;
+        }
+        return false;
+    }
+
 
     public boolean notOccupied(Position BL, Position UR) {
         if (!fitInMap(BL, UR)) {
@@ -68,46 +79,22 @@ public class Game {
         return true;
     }
 
-    /**
-     * Method used for playing a fresh game. The game should start from the main menu.
-     */
-    public void playWithKeyboard() {
-
-        StdDraw.filledSquare(0.5, 0.5, 0.5);
-
-        StdDraw.setPenColor(StdDraw.WHITE);
-        StdDraw.setFont(new Font("Sans Serif", Font.PLAIN, 32));
-        StdDraw.text(0.5, 0.8, "Meow Catching!");
-        StdDraw.setFont(new Font("Sans Serif", Font.PLAIN, 16));
-        StdDraw.text(0.5, 0.54, "New Game (N)");
-        StdDraw.text(0.5, 0.50, "Load Game (L)");
-        StdDraw.text(0.5, 0.46, "Quit (Q)");
-
-        // read input char
-        while (true) {
-            if (StdDraw.hasNextKeyTyped()) {
-                char c = StdDraw.nextKeyTyped();
-                switch (c) {
-                    case ('n' | 'N'):
-                        System.out.println("started!");
-                        gameStartWindow();
-                        int seed = this.getSeed();
-                        this.createWorld(seed);
-
-                        this.ter.initialize(width, height);
-                        this.ter.renderFrame(this.world);
-                        break;
-                    case ('l' | 'L'):
-                        this.loadGame();
-                        break;
-                    case ('q' | 'Q'):
-                        System.exit(0);
-                        break;
-                }
-            }
+    public TETile worldAt(Position p) {
+        if (!fitInMap(p)) {
+            return null;
         }
+        return world[p.x][p.y];
     }
 
+    public TETile changeMapAt(Position p, TETile t) {
+        if (!fitInMap(p)) {
+            return null;
+        }
+        world[p.x][p.y] = t;
+        return world[p.x][p.y];
+    }
+
+    //draw the seed input window
     public void gameStartWindow() {
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.filledSquare(0.5, 0.5, 0.5);
@@ -125,6 +112,7 @@ public class Game {
                 char c = StdDraw.nextKeyTyped();
                 // when user input S or s, start the game
                 if (c == 'S' || c == 's') {
+                    this.seed = seed;
                     return seed;
                 }
                 // read seed number from user input
@@ -147,6 +135,7 @@ public class Game {
                 char c = input.next();
                 // when user input S or s, start the game
                 if (c == 'S' || c == 's') {
+                    this.seed = seed;
                     return seed;
                 }
                 // read seed number from user input
@@ -165,6 +154,92 @@ public class Game {
 
     public void loadGame(){
         System.out.println("loaded!");
+    }
+
+    public void interactivePlay() {
+        while (true) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char c = StdDraw.nextKeyTyped();
+                Position targetPos;
+                switch (c) {
+                    case 'w':
+                    case 'W':
+                        targetPos = new Position(characterPos.x, characterPos.y + 1);
+                        break;
+
+                    case 'd':
+                    case 'D':
+                        targetPos = new Position(characterPos.x + 1, characterPos.y);
+                        break;
+
+                    case 'a':
+                    case 'A':
+                        targetPos = new Position(characterPos.x - 1, characterPos.y);
+                        break;
+
+                    case 's':
+                    case 'S':
+                        targetPos = new Position(characterPos.x, characterPos.y - 1);
+                        break;
+                    default:
+                        return;
+
+                }
+                if (worldAt(targetPos).equals(Tileset.FLOOR)) {
+                    changeMapAt(characterPos, Tileset.FLOOR);
+                    changeMapAt(targetPos, Tileset.PLAYER);
+                    characterPos = targetPos;
+                    ter.renderFrame(this.world);
+                }
+            }
+        }
+    }
+
+    /**
+     * Method used for playing a fresh game. The game should start from the main menu.
+     */
+    public void playWithKeyboard() {
+
+        StdDraw.clear(StdDraw.BLACK);
+
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.setFont(new Font("Sans Serif", Font.PLAIN, 32));
+        StdDraw.text(0.5, 0.8, "Meow Catching!");
+        StdDraw.setFont(new Font("Sans Serif", Font.PLAIN, 16));
+        StdDraw.text(0.5, 0.54, "New Game (N)");
+        StdDraw.text(0.5, 0.50, "Load Game (L)");
+        StdDraw.text(0.5, 0.46, "Quit (Q)");
+
+        // read input char
+        while (true) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char c = StdDraw.nextKeyTyped();
+                switch (c) {
+                    case 'n':
+                    case 'N':
+                        System.out.println("started!");
+                        gameStartWindow();
+                        int seed = this.getSeed();
+                        this.createWorld(seed);
+
+                        this.ter.initialize(width, height);
+                        this.ter.renderFrame(this.world);
+
+                        this.interactivePlay();
+                        break;
+
+                    case 'l':
+                    case 'L':
+                        this.loadGame();
+                        break;
+
+                    case 'q':
+                    case 'Q':
+                        System.exit(0);
+                        break;
+                }
+            }
+        }
     }
 
 
@@ -186,25 +261,31 @@ public class Game {
         // drawn if the same inputs had been given to playWithKeyboard().
 
         StringIterator s = new StringIterator(input);
+
+        //for (int i = 1; i < input.length(); i += 1)
         while (s.hasNext()) {
             char c = s.next();
             switch (c) {
-                case ('n' | 'N'):
+                case 'n':
+                case 'N':
                     int seed = this.getSeed(s);
                     this.createWorld(seed);
                     break;
-                case ('l' | 'L'):
+
+                case 'l':
+                case 'L':
                     this.loadGame();
                     break;
-                case ('q' | 'Q'):
+
+                case 'q':
+                case 'Q':
                     System.exit(0);
                     break;
             }
 
         }
 
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        return this.world;
     }
 
     public static void main(String[] args) {

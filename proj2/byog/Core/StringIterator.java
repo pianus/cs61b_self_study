@@ -21,7 +21,7 @@ public class StringIterator implements Iterator<Character> {
             throw new NullPointerException();
         }
         cur += 1;
-        return s.charAt(cur);
+        return s.charAt(cur-1);
 
     }
 

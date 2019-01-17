@@ -6,45 +6,40 @@ import byog.TileEngine.Tileset;
 import java.util.Random;
 
 public class CreateMap {
-    public Random r;
-    public int height;
-    public int width;
-    public TETile[][] world;
-
-    public CreateMap(Random r, int height, int width, TETile[][] world) {
-        this.r = r;
-        this.height = height;
-        this.width = width;
-        this.world = world;
-    }
 
 
-    public TETile[][] create(int numOfRooms) {
+    public static TETile[][] createRandomMap(Random r, TETile[][] world, int numOfRooms) {
+        if (world.length < 1 || world[0].length < 1) {
+            throw new RuntimeException("Can't create empty world");
+        }
 
-        Position[] preR = createRoom(r);
+        int width = world.length;
+        int height = world[0].length;
+
+        Position[] preR = createRoom(r, width, height, world);
 
         for (int i = 0; i < numOfRooms - 1; i += 1) {
-            Position[] curR = createRoom(r);
-            connectRoom(r, preR, curR);
+            Position[] curR = createRoom(r,width, height, world);
+            connectRoom(r, preR, curR, world);
             preR = curR;
             //System.out.println("new connect");
         }
-        return this.world;
+        return world;
     }
 
-    boolean fitInMap(Position BL, Position UR) {
+    public static boolean fitInMap(Position BL, Position UR, int width, int height) {
         if (BL.x > UR.x || BL.y > UR.y) {
             throw new RuntimeException("the two points cannot form a square");
         }
-        if (BL.x < this.width && BL.y < this.height && UR.x < this.width && UR.y < this.height
+        if (BL.x < width && BL.y < height && UR.x < width && UR.y < height
                 && BL.x >= 0 && BL.y >= 0 && UR.x >= 0 && UR.y >= 0) {
             return true;
         }
         return false;
     }
 
-    public boolean notOccupied(Position BL, Position UR) {
-        if (!fitInMap(BL, UR)) {
+    public static boolean notOccupied(Position BL, Position UR, int width, int height, TETile[][] world) {
+        if (!fitInMap(BL, UR, width, height)) {
             throw new RuntimeException("room not fit in map");
         }
         for (int i = 0; i < UR.x - BL.x; i += 1) {
@@ -57,7 +52,7 @@ public class CreateMap {
         return true;
     }
 
-    public Position[] createRoom(Random r) {
+    public static Position[] createRoom(Random r, int width, int height, TETile[][] world) {
         int rWidth = RandomUtils.uniform(r, 4, 14);
         int rHeight = RandomUtils.uniform(r, 4, 14);
         int rX = RandomUtils.uniform(r, 0, width - rWidth);
@@ -67,8 +62,8 @@ public class CreateMap {
         Position BL = new Position(rX, rY);
         Position UR = new Position(rX + rWidth, rY + rHeight);
 
-        if (!notOccupied(BL, UR)) {
-            Position[] p = createRoom(r);
+        if (!notOccupied(BL, UR, width, height, world)) {
+            Position[] p = createRoom(r, width, height, world);
             //System.out.println("new room");
             return p;
         }
@@ -87,7 +82,7 @@ public class CreateMap {
 
     }
 
-    public void createHorizontalHallWay(Position p1, Position p2) {
+    public static void createHorizontalHallWay(Position p1, Position p2, TETile[][] world) {
         if (p1.y != p2.y) {
             throw new RuntimeException("cannot create horizontal hall way from these positions");
         }
@@ -97,17 +92,17 @@ public class CreateMap {
         int displacement = p2.x - p1.x;
         int increment = displacement / Math.abs(displacement);
         for (int i = 0; i <= Math.abs(displacement); i += 1) {
-            this.world[p1.x + increment * i][p1.y] = Tileset.FLOOR;
-            if (this.world[p1.x + increment * i][p1.y - 1] == Tileset.NOTHING) {
-                this.world[p1.x + increment * i][p1.y - 1] = Tileset.WALL;
+            world[p1.x + increment * i][p1.y] = Tileset.FLOOR;
+            if (world[p1.x + increment * i][p1.y - 1] == Tileset.NOTHING) {
+                world[p1.x + increment * i][p1.y - 1] = Tileset.WALL;
             }
-            if (this.world[p1.x + increment * i][p1.y + 1] == Tileset.NOTHING) {
-                this.world[p1.x + increment * i][p1.y + 1] = Tileset.WALL;
+            if (world[p1.x + increment * i][p1.y + 1] == Tileset.NOTHING) {
+                world[p1.x + increment * i][p1.y + 1] = Tileset.WALL;
             }
         }
 
     }
-    public void createVertialHallWay(Position p1, Position p2) {
+    public static void createVertialHallWay(Position p1, Position p2, TETile[][] world) {
         if (p1.x != p2.x) {
             throw new RuntimeException("cannot create vertical hall way from these positions");
         }
@@ -117,18 +112,18 @@ public class CreateMap {
         int displacement = p2.y - p1.y;
         int increment = displacement / Math.abs(displacement);
         for (int i = 0; i <= Math.abs(displacement); i += 1) {
-            this.world[p1.x][p1.y + increment * i] = Tileset.FLOOR;
-            if (this.world[p1.x - 1][p1.y + increment * i] == Tileset.NOTHING) {
-                this.world[p1.x - 1][p1.y + increment * i] = Tileset.WALL;
+            world[p1.x][p1.y + increment * i] = Tileset.FLOOR;
+            if (world[p1.x - 1][p1.y + increment * i] == Tileset.NOTHING) {
+                world[p1.x - 1][p1.y + increment * i] = Tileset.WALL;
             }
-            if (this.world[p1.x + 1][p1.y + increment * i] == Tileset.NOTHING) {
-                this.world[p1.x + 1][p1.y + increment * i] = Tileset.WALL;
+            if (world[p1.x + 1][p1.y + increment * i] == Tileset.NOTHING) {
+                world[p1.x + 1][p1.y + increment * i] = Tileset.WALL;
             }
         }
 
     }
 
-    public void createCornorHallWay(Position p) {
+    public static void createCornorHallWay(Position p, TETile[][] world) {
         Position p1 = new Position(p.x - 1, p.y - 1);
         Position p2 = new Position(p.x + 1, p.y - 1);
         Position p3 = new Position(p.x - 1, p.y + 1);
@@ -138,7 +133,7 @@ public class CreateMap {
 
         for (Position i : ps) {
             if (world[i.x][i.y] == Tileset.NOTHING) {
-                this.world[i.x][i.y] = Tileset.WALL;
+                world[i.x][i.y] = Tileset.WALL;
             }
         }
     }
@@ -149,7 +144,7 @@ public class CreateMap {
      * @param preR the BR and UR points of previous created room
      * @param curR the BR and UR points of current created room
     */
-    public void connectRoom(Random r, Position[] preR, Position[] curR) {
+    public static void connectRoom(Random r, Position[] preR, Position[] curR, TETile[][] world) {
         // determine the origin of hall way in both rooms
         int preX = RandomUtils.uniform(r, preR[0].x + 1, preR[1].x - 1);
         int preY = RandomUtils.uniform(r, preR[0].y + 1, preR[1].y - 1);
@@ -163,18 +158,39 @@ public class CreateMap {
 
         switch (curvature) {
             case 0:
-                createVertialHallWay(new Position(preX, preY), new Position(preX, curY));
-                createHorizontalHallWay(new Position(curX, curY), new Position(preX, curY));
-                createCornorHallWay(new Position(preX, curY));
+                createVertialHallWay(new Position(preX, preY), new Position(preX, curY), world);
+                createHorizontalHallWay(new Position(curX, curY), new Position(preX, curY), world);
+                createCornorHallWay(new Position(preX, curY), world);
                 break;
             case 1:
-                createHorizontalHallWay(new Position(preX, preY), new Position(curX, preY));
-                createVertialHallWay(new Position(curX, curY), new Position(curX, preY));
-                createCornorHallWay(new Position(curX, preY));
+                createHorizontalHallWay(new Position(preX, preY), new Position(curX, preY), world);
+                createVertialHallWay(new Position(curX, curY), new Position(curX, preY), world);
+                createCornorHallWay(new Position(curX, preY), world);
                 break;
         }
 
     }
 
 
+    public static Position createCharacter(Random r, TETile[][] world) {
+        if (world.length < 1 || world[0].length < 1) {
+            throw new RuntimeException("Can't create empty world");
+        }
+
+        int width = world.length;
+        int height = world[0].length;
+
+        int caracterPositionX = RandomUtils.uniform(r, width);
+        int caracterPositionY = RandomUtils.uniform(r, height);
+
+        while (world[caracterPositionX][caracterPositionY] != Tileset.FLOOR) {
+            caracterPositionX = RandomUtils.uniform(r, width);
+            caracterPositionY = RandomUtils.uniform(r, height);
+        }
+
+        world[caracterPositionX][caracterPositionY] = Tileset.PLAYER;
+
+        return new Position(caracterPositionX, caracterPositionY);
+
+    }
 }
