@@ -34,11 +34,9 @@ public class Percolation {
     // open the site (row, col) if it is not open already
 
     public void open(int row, int col) {
-        
         if (!inGrid(row, col)) {
             throw new java.lang.IndexOutOfBoundsException();
         }
-
         //find left, right, up, and down grid indexes (ignore edge condition)
         List<Integer> neighborIndexes = new ArrayList<Integer>();
         //find all exist neighbor grids
@@ -54,8 +52,6 @@ public class Percolation {
         if (inGrid(row, col + 1)) {
             neighborIndexes.add(findIndex(row, col + 1));
         }
-
-
         int selfIndex = findIndex(row, col);
         /*
         //compute open sites
@@ -65,23 +61,19 @@ public class Percolation {
             o.union(selfIndex, size);
         }
         */
-
         //1. alternate 1
         if (!o[row][col]) {
             numberOfOpenSites += 1;
             o[row][col] = true;
         }
-
         //2. if itself is the first row, add itself to full group
         if (selfIndex < N) {
             f.union(selfIndex, size);
         }
-
         //3. symmetric operation to b similar to f
         if (selfIndex >= N * (N - 1)) {
             b.union(selfIndex, size);
         }
-
         for (int i = 0; i < neighborIndexes.size(); i += 1) {
             //for each neighbor
             //1. operations to m: if this neighbor is also open,
@@ -105,19 +97,15 @@ public class Percolation {
             if (f.connected(neighborIndexes.get(i), size)) {
                 f.union(selfIndex, neighborIndexes.get(i));
             }
-
             //3. symmetric operation as to f: operation to b: if the neighbor
             //   is "bottom full", add self to the "bottom full" group
             if (b.connected(neighborIndexes.get(i), size)) {
                 b.union(selfIndex, neighborIndexes.get(i));
             }
         }
-
-
         if (f.connected(selfIndex, size) && b.connected(selfIndex, size)) {
             percolates = true;
         }
-
     }
 
     public boolean isOpen(int row, int col) { // is the site (row, col) open?
