@@ -32,7 +32,9 @@ public class Percolation {
     }
 
     // open the site (row, col) if it is not open already
+
     public void open(int row, int col) {
+        
         if (!inGrid(row, col)) {
             throw new java.lang.IndexOutOfBoundsException();
         }
