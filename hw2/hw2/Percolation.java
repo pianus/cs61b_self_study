@@ -9,20 +9,23 @@ public class Percolation {
     private int N;
     private int size; //total number of grids
     private WeightedQuickUnionUF m; //stores grids that are clusted
-    private WeightedQuickUnionUF o; //stores grids that are open
+    //private WeightedQuickUnionUF o; //stores grids that are open
+    private boolean[][] o;
+
     private WeightedQuickUnionUF f; //stores grids that area full
-    private WeightedQuickUnionUF b; //stores grids that are "bottom full" (connected to the bottom line)
+    private WeightedQuickUnionUF b; //stores grids that are "bottom full"
     private int numberOfOpenSites = 0;
     private boolean percolates = false;
 
-    public Percolation(int N) {                // create N-by-N grid, with all sites initially blocked
+    public Percolation(int N) {   // create N-by-N grid, with all sites blocked
         if (N <= 0) {
             throw new java.lang.IllegalArgumentException();
         } else {
             this.N = N;
             size = N * N;
             m = new WeightedQuickUnionUF(size);
-            o = new WeightedQuickUnionUF(size + 1); //anything added to index N*N is opened
+            //o = new WeightedQuickUnionUF(size + 1); //anything added to index N*N is opened
+            o = new boolean[N][N];
             f = new WeightedQuickUnionUF(size + 1); //anything added to index N*N is full
             b = new WeightedQuickUnionUF(size + 1); //anything added to index N*N is "bottom full"
         }
@@ -51,11 +54,19 @@ public class Percolation {
 
 
         int selfIndex = findIndex(row, col);
+        /*
         //compute open sites
         //&& 1. operation to o: add the grid to the open group
         if (!o.connected(selfIndex, size)) {
             numberOfOpenSites += 1;
             o.union(selfIndex, size);
+        }
+        */
+
+        //1. alternate 1
+        if (o[row][col] == false) {
+            numberOfOpenSites += 1;
+            o[row][col] = true;
         }
 
         //2. if itself is the first row, add itself to full group
@@ -70,10 +81,18 @@ public class Percolation {
 
         for (int i = 0; i < neighborIndexes.size(); i += 1) {
             //for each neighbor
-            //1. operations to m: if this neighbor is also open, cluster them and note it in neighborOpen
+            //1. operations to m: if this neighbor is also open,
+            //   cluster them and note it in neighborOpen
+            /*
             if (o.connected(neighborIndexes.get(i), size)) {
                 m.union(selfIndex, neighborIndexes.get(i));
                 o.union(selfIndex, neighborIndexes.get(i));
+                f.union(selfIndex, neighborIndexes.get(i));
+                b.union(selfIndex, neighborIndexes.get(i));
+            }
+            */
+            if (o[neighborIndexes.get(i) / N][neighborIndexes.get(i) % N]) {
+                m.union(selfIndex, neighborIndexes.get(i));
                 f.union(selfIndex, neighborIndexes.get(i));
                 b.union(selfIndex, neighborIndexes.get(i));
             }
@@ -102,14 +121,16 @@ public class Percolation {
         if (!inGrid(row, col)) {
             throw new java.lang.IndexOutOfBoundsException();
         }
-        return o.connected(findIndex(row, col), size);
+        //return o.connected(findIndex(row, col), size);
+        return o[row][col];
+
     }
 
     public boolean isFull(int row, int col) { // is the site (row, col) full?
         if (!inGrid(row, col)) {
             throw new java.lang.IndexOutOfBoundsException();
         }
-        return f.connected(findIndex(row,col), size);
+        return f.connected(findIndex(row, col), size);
     }
 
     public int numberOfOpenSites() {          // number of open sites (omega(1))

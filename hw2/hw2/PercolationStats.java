@@ -1,8 +1,6 @@
 package hw2;
 import edu.princeton.cs.introcs.StdRandom;
 import edu.princeton.cs.introcs.StdStats;
-import edu.princeton.cs.introcs.StdOut;
-
 
 public class PercolationStats {
     private double mean;
