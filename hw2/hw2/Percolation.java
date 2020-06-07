@@ -6,26 +6,25 @@ import java.util.List;
 
 
 public class Percolation {
-    int N;
-    int size; //total number of grids
-    WeightedQuickUnionUF m; //stores grids that are clusted
-    WeightedQuickUnionUF o; //stores grids that are open
-    WeightedQuickUnionUF f; //stores grids that area full
-    WeightedQuickUnionUF b; //stores grids that are "bottom full" (connected to the bottom line)
-    int numberOfOpenSites = 0;
-    boolean percolates = false;
+    private int N;
+    private int size; //total number of grids
+    private WeightedQuickUnionUF m; //stores grids that are clusted
+    private WeightedQuickUnionUF o; //stores grids that are open
+    private WeightedQuickUnionUF f; //stores grids that area full
+    private WeightedQuickUnionUF b; //stores grids that are "bottom full" (connected to the bottom line)
+    private int numberOfOpenSites = 0;
+    private boolean percolates = false;
 
     public Percolation(int N) {                // create N-by-N grid, with all sites initially blocked
         if (N <= 0) {
             throw new java.lang.IllegalArgumentException();
-        }
-        else {
+        } else {
             this.N = N;
-            size = N*N;
+            size = N * N;
             m = new WeightedQuickUnionUF(size);
-            o = new WeightedQuickUnionUF(size+1);//anything added to index N*N is opened
-            f = new WeightedQuickUnionUF(size+1);//anything added to index N*N is full
-            b = new WeightedQuickUnionUF(size+1);//anything added to index N*N is "bottom full"
+            o = new WeightedQuickUnionUF(size + 1); //anything added to index N*N is opened
+            f = new WeightedQuickUnionUF(size + 1); //anything added to index N*N is full
+            b = new WeightedQuickUnionUF(size + 1); //anything added to index N*N is "bottom full"
         }
     }
 
@@ -37,23 +36,24 @@ public class Percolation {
         //find left, right, up, and down grid indexes (ignore edge condition)
         List<Integer> neighborIndexes = new ArrayList<Integer>();
         //find all exist neighbor grids
-        if (inGrid(row-1, col)){
-            neighborIndexes.add(findIndex(row-1, col));
+        if (inGrid(row - 1, col)) {
+            neighborIndexes.add(findIndex(row - 1, col));
         }
-        if (inGrid(row+1, col)){
-            neighborIndexes.add(findIndex(row+1, col));
+        if (inGrid(row + 1, col)) {
+            neighborIndexes.add(findIndex(row + 1, col));
         }
-        if (inGrid(row, col-1)){
-            neighborIndexes.add(findIndex(row, col-1));
+        if (inGrid(row, col - 1)) {
+            neighborIndexes.add(findIndex(row, col - 1));
         }
-        if (inGrid(row, col+1)){
-            neighborIndexes.add(findIndex(row, col+1));
+        if (inGrid(row, col + 1)) {
+            neighborIndexes.add(findIndex(row, col + 1));
         }
+
 
         int selfIndex = findIndex(row, col);
         //compute open sites
         //&& 1. operation to o: add the grid to the open group
-        if(!o.connected(selfIndex,size)) {
+        if (!o.connected(selfIndex, size)) {
             numberOfOpenSites += 1;
             o.union(selfIndex, size);
         }
@@ -64,28 +64,30 @@ public class Percolation {
         }
 
         //3. symmetric operation to b similar to f
-        if (selfIndex >= N*(N-1)) {
+        if (selfIndex >= N * (N - 1)) {
             b.union(selfIndex, size);
         }
 
-        for (int i = 0; i<neighborIndexes.size(); i+=1){
+        for (int i = 0; i < neighborIndexes.size(); i += 1) {
             //for each neighbor
             //1. operations to m: if this neighbor is also open, cluster them and note it in neighborOpen
             if (o.connected(neighborIndexes.get(i), size)) {
-                m.union(selfIndex,neighborIndexes.get(i));
-                o.union(selfIndex,neighborIndexes.get(i));
-                f.union(selfIndex,neighborIndexes.get(i));
-                b.union(selfIndex,neighborIndexes.get(i));
+                m.union(selfIndex, neighborIndexes.get(i));
+                o.union(selfIndex, neighborIndexes.get(i));
+                f.union(selfIndex, neighborIndexes.get(i));
+                b.union(selfIndex, neighborIndexes.get(i));
             }
 
-            //2. operation to f: if the neighbor is full, add the self to the full group (with the clusted group)
+            //2. operation to f: if the neighbor is full, add the self to the
+            //     full group (with the clusted group)
             if (f.connected(neighborIndexes.get(i), size)) {
-                f.union(selfIndex,neighborIndexes.get(i));
+                f.union(selfIndex, neighborIndexes.get(i));
             }
 
-            //3. symmetric operation as to f: operation to b: if the neighbor is "bottom full", add self to the "bottom full" group
+            //3. symmetric operation as to f: operation to b: if the neighbor
+            //   is "bottom full", add self to the "bottom full" group
             if (b.connected(neighborIndexes.get(i), size)) {
-                b.union(selfIndex,neighborIndexes.get(i));
+                b.union(selfIndex, neighborIndexes.get(i));
             }
         }
 
@@ -100,7 +102,7 @@ public class Percolation {
         if (!inGrid(row, col)) {
             throw new java.lang.IndexOutOfBoundsException();
         }
-        return o.connected(findIndex(row,col), size);
+        return o.connected(findIndex(row, col), size);
     }
 
     public boolean isFull(int row, int col) { // is the site (row, col) full?
@@ -130,7 +132,7 @@ public class Percolation {
     }
 
     private boolean inGrid(int row, int col) {
-        if (row >= N || row < 0 || col >= N || col <0){
+        if (row >= N || row < 0 || col >= N || col < 0) {
             return false;
         }
         return true;
