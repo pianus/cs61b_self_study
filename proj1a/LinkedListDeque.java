@@ -5,13 +5,13 @@
  */
 public class LinkedListDeque<T> {
 
-    private static class ItemNode<T> {
+    private class ItemNode {
 
         private T item;
-        private ItemNode<T> previous;
-        private ItemNode<T> next;
+        private ItemNode previous;
+        private ItemNode next;
 
-        private ItemNode(T i, ItemNode<T> p, ItemNode<T> n) {
+        private ItemNode(T i, ItemNode p, ItemNode n) {
             item = i;
             previous = p;
             next = n;
@@ -19,7 +19,7 @@ public class LinkedListDeque<T> {
     }
 
     private int size;
-    private ItemNode<T> sentinel;
+    private ItemNode sentinel;
 
     /**
      * initialize linkedListDeque with a sentinel ItemNode.
@@ -32,7 +32,7 @@ public class LinkedListDeque<T> {
     3. sentinel.previous is the last item in the LinkedLIstDeque.
      */
     public LinkedListDeque() {
-        sentinel = new ItemNode<>(null, null, null);
+        sentinel = new ItemNode(null, null, null);
         sentinel.previous = sentinel;
         sentinel.next = sentinel;
 
@@ -44,7 +44,7 @@ public class LinkedListDeque<T> {
      * @param item the item added to the front of deque
      */
     public void addFirst(T item) {
-        ItemNode<T> first = new ItemNode<>(item, sentinel, sentinel.next);
+        ItemNode first = new ItemNode(item, sentinel, sentinel.next);
         sentinel.next.previous = first;
         sentinel.next = first;
 
@@ -56,7 +56,7 @@ public class LinkedListDeque<T> {
      * @param item the item added to the last of deque
      */
     public void addLast(T item) {
-        ItemNode<T> last = new ItemNode<>(item, sentinel.previous, sentinel);
+        ItemNode last = new ItemNode(item, sentinel.previous, sentinel);
         sentinel.previous.next = last;
         sentinel.previous = last;
         size += 1;
@@ -97,7 +97,7 @@ public class LinkedListDeque<T> {
         if (isEmpty()) {
             return null;
         }
-        ItemNode<T> first = sentinel.next;
+        ItemNode first = sentinel.next;
         sentinel.next.next.previous = sentinel;
         sentinel.next = sentinel.next.next;
         size -= 1;
@@ -112,7 +112,7 @@ public class LinkedListDeque<T> {
         if (isEmpty()) {
             return null;
         }
-        ItemNode<T> last = sentinel.previous;
+        ItemNode last = sentinel.previous;
         sentinel.previous.previous.next = sentinel;
         sentinel.previous = sentinel.previous.previous;
         size -= 1;
@@ -129,7 +129,7 @@ public class LinkedListDeque<T> {
         if (index >= size) {
             return null;
         }
-        ItemNode<T> current;
+        ItemNode current;
         current = sentinel.next;
         for (int i = 0; i < index; i++) {
             current = current.next;
@@ -146,7 +146,7 @@ public class LinkedListDeque<T> {
 
     }
 
-    private T getRecursiveHelper(int index, ItemNode<T> current) {
+    private T getRecursiveHelper(int index, ItemNode current) {
         if (index == 0) {
             return current.item;
         } else {

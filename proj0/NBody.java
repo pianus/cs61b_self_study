@@ -45,7 +45,8 @@ public class NBody {
 		}
 		 
 		StdDraw.enableDoubleBuffering();
-
+		StdAudio.play("./audio/2001.mid");
+		//update the position and velocity of planets until time ends
 		double time = 0;
 		while (time < T) {
 			double[] xForces = new double[planets.length];
@@ -71,6 +72,9 @@ public class NBody {
 			time += dt;
 		}
 
+
+
+		//print out the final position and velocity data for 
 		StdOut.printf("%d\n", planets.length);
 		StdOut.printf("%.2e\n", universeRadius);
 		for (int i = 0; i < planets.length; i++) {

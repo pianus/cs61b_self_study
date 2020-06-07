@@ -37,6 +37,8 @@ public class Tileset {
     public static final TETile MOUNTAIN = new TETile('▲', Color.gray, Color.black, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, Color.black, "tree");
 
+    public static final TETile CAT = new TETile('Q', Color.orange, Color.black, "cat");
+
     public static final TETile[] mapTexture = new TETile[]{Tileset.WALL, Tileset.FLOOR, Tileset.FLOWER, Tileset.WATER, Tileset.SAND, Tileset.MOUNTAIN, Tileset.TREE};
     public static TETile nextRanMapTex(Random r) {
         return Tileset.mapTexture[RandomUtils.uniform(r, 7)];

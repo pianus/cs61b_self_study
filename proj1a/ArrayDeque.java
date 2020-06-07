@@ -154,7 +154,7 @@ public class ArrayDeque<T> {
         }
         int removeIndex = Math.floorMod((nextLast - 1), t.length);
         T last = t[removeIndex];
-        nextLast = Math.floorMod(nextLast - 1, t.length); 
+        nextLast = Math.floorMod(nextLast - 1, t.length);
         size -= 1;
         t[removeIndex] = null;
         return last;

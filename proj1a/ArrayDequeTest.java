@@ -59,8 +59,10 @@ public class ArrayDequeTest {
             ad.removeFirst();
             ad.removeFirst();
         }
-        assertEquals(6,ad.size());
+        assertEquals(6, ad.size());
     }
+
+
 
     public static ArrayDeque<Integer> makeList(int[] input) {
         ArrayDeque<Integer> ad = new ArrayDeque();

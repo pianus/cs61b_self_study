@@ -4,7 +4,7 @@ public class LinkedListDequeTest {
      */
     public static boolean checkEmpty(boolean expected, boolean actual) {
         if (expected != actual) {
-			System.out.println("isEmpty() returned " + actual + ", but expected: " + expected);
+            System.out.println("isEmpty() returned " + actual + ", but expected: " + expected);
 			return false;
 		}
 		return true;

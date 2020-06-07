@@ -3,6 +3,7 @@ package byog.Core;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
+
 import java.util.Random;
 
 public class CreateMap {
@@ -172,7 +173,34 @@ public class CreateMap {
     }
 
 
-    public static Position createCharacter(Random r, TETile[][] world) {
+    public static void rotateWorld(Game g, boolean clockwise) {
+        int width = g.height;
+        int height = g.width;
+
+        TETile[][] newWorld = new TETile[width][height];
+        if (clockwise) {
+            for (int i = 0; i < g.width; i += 1) {
+                for (int j = 0; j < g.height; j += 1) {
+                    newWorld[j][height - i - 1] = g.world[i][j];
+                }
+            }
+            g.characterPos = g.characterPos.rotatedPosition(width, height, true);
+            g.catPos = g.catPos.rotatedPosition(width, height, true);
+        } else {
+            for (int i = 0; i < g.width; i += 1) {
+                for (int j = 0; j < g.height; j += 1) {
+                    newWorld[width - j - 1][i] = g.world[i][j];
+                }
+            }
+            g.characterPos = g.characterPos.rotatedPosition(width, height, false);
+            g.catPos = g.catPos.rotatedPosition(width, height, false);
+        }
+        g.height = height;
+        g.width = width;
+        g.world = newWorld;
+        g.ter.initialize(width, height);
+    }
+    public static Position createMoveObjectRandom(Random r, TETile[][] world, TETile object) {
         if (world.length < 1 || world[0].length < 1) {
             throw new RuntimeException("Can't create empty world");
         }
@@ -188,9 +216,10 @@ public class CreateMap {
             caracterPositionY = RandomUtils.uniform(r, height);
         }
 
-        world[caracterPositionX][caracterPositionY] = Tileset.PLAYER;
+        world[caracterPositionX][caracterPositionY] = object;
 
         return new Position(caracterPositionX, caracterPositionY);
 
     }
+
 }

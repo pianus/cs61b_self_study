@@ -10,16 +10,29 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import java.util.Random;
 
-public class Game {
+public class Game implements java.io.Serializable {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int width = 80;
-    public static final int height = 30;
+    public int width = 50;
+    public int height = 30;
     public TETile[][] world;
     public int seed;
     public Position characterPos;
+    public Position catPos;
+    public boolean catTurn;
+    public boolean gameWin;
+    public boolean playWithKeyboard;
+
 
     public Game() {
 
@@ -38,22 +51,14 @@ public class Game {
         }
         Random r = new Random(seed);
         RandomUtils.uniform(r);
-        int numOfRooms = RandomUtils.uniform(r, 4, 14);
+        int numOfRooms = RandomUtils.uniform(r, 4, 10);
 
         CreateMap.createRandomMap(r, world, numOfRooms);
-        this.characterPos = CreateMap.createCharacter(r, world);
+        this.characterPos = CreateMap.createMoveObjectRandom(r, world, Tileset.PLAYER);
+        this.catPos = CreateMap.createMoveObjectRandom(r, world, Tileset.CAT);
+        this.catTurn = true;
+        this.gameWin = false;
 
-    }
-
-    boolean fitInMap(Position BL, Position UR) {
-        if (BL.x > UR.x || BL.y > UR.y) {
-            throw new RuntimeException("the two points cannot form a square");
-        }
-        if (BL.x < this.width && BL.y < this.height && UR.x < this.width && UR.y < this.height
-                && BL.x >= 0 && BL.y >= 0 && UR.x >= 0 && UR.y >= 0) {
-            return true;
-        }
-        return false;
     }
 
     boolean fitInMap(Position p) {
@@ -64,21 +69,7 @@ public class Game {
         return false;
     }
 
-
-    public boolean notOccupied(Position BL, Position UR) {
-        if (!fitInMap(BL, UR)) {
-            throw new RuntimeException("room not fit in map");
-        }
-        for (int i = 0; i < UR.x - BL.x; i += 1) {
-            for (int j = 0; j < UR.y - BL.y; j += 1) {
-                if (world[i + BL.x][j + BL.y] != Tileset.NOTHING) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
+    //return the TETile at the position p in the world
     public TETile worldAt(Position p) {
         if (!fitInMap(p)) {
             return null;
@@ -86,6 +77,7 @@ public class Game {
         return world[p.x][p.y];
     }
 
+    //change the TETile at position p in the world
     public TETile changeMapAt(Position p, TETile t) {
         if (!fitInMap(p)) {
             return null;
@@ -150,55 +142,194 @@ public class Game {
         }
     }
 
+    public void saveGame() {
+        try {
+            FileOutputStream f = new FileOutputStream(new File("savedGame.txt"));
+            ObjectOutputStream o = new ObjectOutputStream(f);
 
+            // Write objects to file
+            o.writeObject(this);
+
+            o.close();
+            f.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+
+    }
+    public void readSavedFile() {
+        System.out.println("loaded!");
+        try {
+            FileInputStream fi = new FileInputStream(new File("savedGame.txt"));
+            ObjectInputStream oi = new ObjectInputStream(fi);
+
+            // Read objects
+            Game g = (Game) oi.readObject();
+            this.width = g.width;
+            this.height = g.height;
+            this.world = g.world;
+            this.seed = g.seed;
+            this.characterPos = g.characterPos;
+            this.catPos = g.catPos;
+            this.catTurn = g.catTurn;
+            this.gameWin = g.gameWin;
+            this.playWithKeyboard = g.playWithKeyboard;
+
+
+            oi.close();
+            fi.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("Error initializing stream");
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     public void loadGame(){
         System.out.println("loaded!");
+        readSavedFile();
+        this.ter.renderFrame(this.world);
+        StdDraw.show();
+        interactivePlay();
+
     }
+    public void loadGame(Iterator<Character> input){
+        System.out.println("loaded!");
+        readSavedFile();
+        interactivePlay(input);
+
+    }
+
+    public Position catMove() {
+        Position movePotential = Position.relativeDirection(characterPos, catPos);
+        Position[] moveDirectionRank = Position.directionRankin(movePotential);
+        for (Position p : moveDirectionRank) {
+            Position targetPos = Position.add(catPos, p);
+            if (worldAt(targetPos).equals(Tileset.FLOOR)) {
+                changeMapAt(catPos, Tileset.FLOOR);
+                changeMapAt(targetPos, Tileset.CAT);
+                catPos = targetPos;
+                return catPos;
+            }
+        }
+        return null;
+    }
+
+    public void move(char c) {
+        Position targetPos;
+        switch (c) {
+            case 'w':
+            case 'W':
+                targetPos = new Position(characterPos.x, characterPos.y + 1);
+                break;
+
+            case 'd':
+            case 'D':
+                targetPos = new Position(characterPos.x + 1, characterPos.y);
+                break;
+
+            case 'a':
+            case 'A':
+                targetPos = new Position(characterPos.x - 1, characterPos.y);
+                break;
+
+            case 's':
+            case 'S':
+                targetPos = new Position(characterPos.x, characterPos.y - 1);
+                break;
+            default:
+                return;
+
+        }
+        if (worldAt(targetPos).equals(Tileset.FLOOR)) {
+            changeMapAt(characterPos, Tileset.FLOOR);
+            changeMapAt(targetPos, Tileset.PLAYER);
+            characterPos = targetPos;
+
+            //cat move 1 step for every 2 step player move
+            if (catTurn) {
+                catMove();
+            }
+            catTurn = !catTurn;
+        }
+
+        if (worldAt(targetPos).equals(Tileset.CAT)) {
+            changeMapAt(characterPos, Tileset.FLOOR);
+            changeMapAt(targetPos, Tileset.PLAYER);
+            characterPos = targetPos;
+            gameWin = true;
+        }
+    }
+
+    public void reactOponInput(char c) {
+        switch (c) {
+            //character move
+            case 'w':
+            case 'W':
+            case 'd':
+            case 'D':
+            case 'a':
+            case 'A':
+            case 's':
+            case 'S':
+                move(c);
+                break;
+
+            //rotate the world
+            case 'o':
+            case 'O':
+                CreateMap.rotateWorld(this, true);
+                break;
+            case 'p':
+            case 'P':
+                CreateMap.rotateWorld(this, false);
+            case 'q':
+            case 'Q':
+                this.saveGame();
+                System.exit(0);
+
+        }
+    }
+
+
 
     public void interactivePlay() {
         while (true) {
             if (StdDraw.hasNextKeyTyped()) {
                 char c = StdDraw.nextKeyTyped();
-                Position targetPos;
-                switch (c) {
-                    case 'w':
-                    case 'W':
-                        targetPos = new Position(characterPos.x, characterPos.y + 1);
-                        break;
-
-                    case 'd':
-                    case 'D':
-                        targetPos = new Position(characterPos.x + 1, characterPos.y);
-                        break;
-
-                    case 'a':
-                    case 'A':
-                        targetPos = new Position(characterPos.x - 1, characterPos.y);
-                        break;
-
-                    case 's':
-                    case 'S':
-                        targetPos = new Position(characterPos.x, characterPos.y - 1);
-                        break;
-                    default:
-                        return;
-
+                System.out.println(c);
+                reactOponInput(c);
+                ter.renderFrame(this.world);
                 }
-                if (worldAt(targetPos).equals(Tileset.FLOOR)) {
-                    changeMapAt(characterPos, Tileset.FLOOR);
-                    changeMapAt(targetPos, Tileset.PLAYER);
-                    characterPos = targetPos;
-                    ter.renderFrame(this.world);
-                }
+            if (gameWin == true) {
+                return;
             }
         }
     }
 
+    public void interactivePlay(Iterator<Character> input) {
+
+        while (input.hasNext()) {
+            char c = input.next();
+            reactOponInput(c);
+        }
+        if (gameWin == true) {
+            return;
+        }
+    }
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
+
+        playWithKeyboard = true;
 
         StdDraw.clear(StdDraw.BLACK);
 
@@ -226,6 +357,14 @@ public class Game {
                         this.ter.renderFrame(this.world);
 
                         this.interactivePlay();
+                        // after game win
+                        ter.initialize(width,height);
+                        StdDraw.clear(StdDraw.BLACK);
+                        StdDraw.setPenColor(StdDraw.WHITE);
+                        StdDraw.setFont(new Font("Sans Serif", Font.PLAIN, 32));
+                        StdDraw.text(20, 25, "You Win!!");
+                        StdDraw.text(20, 20, "你这个猫奴");
+                        StdDraw.show();
                         break;
 
                     case 'l':
@@ -260,6 +399,8 @@ public class Game {
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
+        playWithKeyboard = false;
+
         StringIterator s = new StringIterator(input);
 
         //for (int i = 1; i < input.length(); i += 1)
@@ -270,11 +411,14 @@ public class Game {
                 case 'N':
                     int seed = this.getSeed(s);
                     this.createWorld(seed);
+                    this.interactivePlay(s);
+                    //after game win
+
                     break;
 
                 case 'l':
                 case 'L':
-                    this.loadGame();
+                    this.loadGame(s);
                     break;
 
                 case 'q':
