@@ -31,7 +31,8 @@ public class Percolation {
         }
     }
 
-    public void open(int row, int col) {      // open the site (row, col) if it is not open already
+    // open the site (row, col) if it is not open already
+    public void open(int row, int col) {
         if (!inGrid(row, col)) {
             throw new java.lang.IndexOutOfBoundsException();
         }
@@ -64,7 +65,7 @@ public class Percolation {
         */
 
         //1. alternate 1
-        if (o[row][col] == false) {
+        if (!o[row][col]) {
             numberOfOpenSites += 1;
             o[row][col] = true;
         }
