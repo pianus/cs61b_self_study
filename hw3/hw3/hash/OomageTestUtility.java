@@ -1,5 +1,7 @@
 package hw3.hash;
 
+import org.junit.Test;
+
 import java.util.List;
 
 public class OomageTestUtility {
@@ -12,6 +14,21 @@ public class OomageTestUtility {
          * and ensure that no bucket has fewer than N / 50
          * Oomages and no bucket has more than N / 2.5 Oomages.
          */
-        return false;
+        int N = oomages.size();
+        int[] buckets = new int[M];
+        for (Oomage s : oomages) {
+            int bucket = (s.hashCode() & 0x7FFFFFFF) % M;
+            buckets[bucket] += 1;
+        }
+        for (int bucket : buckets) {
+            if (bucket < N / 50 || bucket > N/2.5) {
+                return false;
+            }
+        }
+        return true;
+    }
+    @Test
+    public void testMathAbsMethod() {
+        System.out.println(Math.abs(-2147483640));
     }
 }
