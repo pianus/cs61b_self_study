@@ -27,7 +27,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Returns the index of the node to the left of the node at i.
      */
     private static int leftIndex(int i) {
-        /* TODO: Your code here! */
         return 2 * i;
     }
 
@@ -35,7 +34,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Returns the index of the node to the right of the node at i.
      */
     private static int rightIndex(int i) {
-        /* TODO: Your code here! */
         return 2 * i + 1;
     }
 
@@ -43,7 +41,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Returns the index of the node that is the parent of the node at i.
      */
     private static int parentIndex(int i) {
-        /* TODO: Your code here! */
         return i / 2;
     }
 
@@ -107,7 +104,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
 
-        /** TODO: Your code here. */
         int parentIndex = parentIndex(index);
 
         if (!inBounds(parentIndex)) {
@@ -130,7 +126,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
 
-        /** TODO: Your code here. */
         int leftIndex = leftIndex(index);
         int rightIndex = rightIndex(index);
         if (!inBounds(leftIndex) && !inBounds(rightIndex)) {
@@ -168,7 +163,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             resize(contents.length * 2);
         }
 
-        /* TODO: Your code here! */
         Node n = new Node(item, priority);
         contents[size + 1] = n;
         size = size + 1;
@@ -181,7 +175,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T peek() {
-        /* TODO: Your code here! */
         return getNode(1).myItem;
     }
 
@@ -196,12 +189,11 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T removeMin() {
-        /* TODO: Your code here! */
         if (size == 0) {
             return null;
         }
         Node priority = getNode(1);
-        swap(1,size);
+        swap(1, size);
         contents[size] = null;
         size = size - 1;
         sink(1);
@@ -227,9 +219,8 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public void changePriority(T item, double priority) {
-        /* TODO: Your code here! */
         // find the item
-        int itemIndex = findItem(1,item);
+        int itemIndex = findItem(1, item);
         if (itemIndex == -1) {
             //if no item exists
             return;
@@ -246,7 +237,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         if (getNode(index).myItem.equals(item)) {
             return index;
         } else {
-            return(Math.max(findItem(leftIndex(index), item), findItem(rightIndex(index),item)));
+            return (Math.max(findItem(leftIndex(index), item), findItem(rightIndex(index), item)));
         }
     }
 
@@ -304,7 +295,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             myPriority = priority;
         }
 
-        public T item(){
+        public T item() {
             return myItem;
         }
 
@@ -492,14 +483,14 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         pq.insert("e", 5);
         pq.insert("b", 2);
 
-        pq.changePriority("i",6);
-        pq.changePriority("h",8);
-        pq.changePriority("g",1);
-        pq.changePriority("e",2);
-        pq.changePriority("d",5);
-        pq.changePriority("c",3);
-        pq.changePriority("b",7);
-        pq.changePriority("a",4);
+        pq.changePriority("i", 6);
+        pq.changePriority("h", 8);
+        pq.changePriority("g", 1);
+        pq.changePriority("e", 2);
+        pq.changePriority("d", 5);
+        pq.changePriority("c", 3);
+        pq.changePriority("b", 7);
+        pq.changePriority("a", 4);
 
         int i = 0;
         String[] expected = {"g", "e", "c", "a", "d", "i", "b", "h"};
