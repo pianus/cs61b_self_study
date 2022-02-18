@@ -193,7 +193,10 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             return null;
         }
         if (size == 1) {
+            T item = getNode(1).myItem;
             contents[1] = null;
+            size = 0;
+            return item;
         }
         Node priority = getNode(1);
         swap(1, size);
